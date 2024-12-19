@@ -7,6 +7,8 @@ import { Todo } from '../../@types/todo.type'
 export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([])
 
+  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null)
+
   const doneTodo = todos.filter((todo) => todo.done)
   const notDoneTodo = todos.filter((todo) => !todo.done)
 
@@ -33,13 +35,42 @@ export default function TodoList() {
     )
   }
 
-  console.log(todos)
+  const getEditTodo = (id: string) => {
+    const todo = todos.find((todo) => todo.id === id)
+    if (todo) setCurrentTodo(todo)    
+  }
+
+  const editTodo = (name: string) =>{
+    setCurrentTodo(prev => {
+      if (prev) {
+        return {
+          ...prev,
+          name
+        }
+      }
+      return prev
+    })
+  }
+
+  const finshedEditTodos = () =>{
+    setTodos(prev => {
+      return prev.map(todo => {
+        if (todo.id === currentTodo?.id) {
+          return currentTodo
+        }
+        return todo
+      })
+    })
+    setCurrentTodo(null)
+  }
+
+  console.log(currentTodo)
   return (
     <div className={styles.toDoList}>
       <div className={styles.toDoListContainer}>
-        <TaskInput addTodo={addTodo} />
-        <TaskList todos={notDoneTodo} handleDoneTodo={handleDoneTodo} />
-        <TaskList doneTaskList todos={doneTodo} handleDoneTodo={handleDoneTodo} />
+        <TaskInput addTodo={addTodo} editTodo={editTodo} currentTodo={currentTodo} finshedEditTodos={finshedEditTodos}/>
+        <TaskList todos={notDoneTodo} handleDoneTodo={handleDoneTodo} getEditTodo={getEditTodo}/>
+        <TaskList doneTaskList todos={doneTodo} handleDoneTodo={handleDoneTodo} getEditTodo={getEditTodo} />
       </div>
     </div>
   )
