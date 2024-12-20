@@ -37,11 +37,11 @@ export default function TodoList() {
 
   const getEditTodo = (id: string) => {
     const todo = todos.find((todo) => todo.id === id)
-    if (todo) setCurrentTodo(todo)    
+    if (todo) setCurrentTodo(todo)
   }
 
-  const editTodo = (name: string) =>{
-    setCurrentTodo(prev => {
+  const editTodo = (name: string) => {
+    setCurrentTodo((prev) => {
       if (prev) {
         return {
           ...prev,
@@ -52,9 +52,9 @@ export default function TodoList() {
     })
   }
 
-  const finshedEditTodos = () =>{
-    setTodos(prev => {
-      return prev.map(todo => {
+  const finshedEditTodos = () => {
+    setTodos((prev) => {
+      return prev.map((todo) => {
         if (todo.id === currentTodo?.id) {
           return currentTodo
         }
@@ -64,13 +64,45 @@ export default function TodoList() {
     setCurrentTodo(null)
   }
 
-  console.log(currentTodo)
+  const deleteTodo = (id: string) => {
+    setTodos((prev) => {
+      const todoIndex = prev.findIndex((todo) => todo.id === id)
+      if (todoIndex > -1) {
+        const result = [...prev]
+        result.splice(todoIndex, 1)
+        if (currentTodo?.id === id) {
+          setCurrentTodo(null)
+        }
+        return result
+      }
+      return prev
+    })
+  }
+
+  console.log('current todo', currentTodo)
+  console.log('todos: ', todos)
   return (
     <div className={styles.toDoList}>
       <div className={styles.toDoListContainer}>
-        <TaskInput addTodo={addTodo} editTodo={editTodo} currentTodo={currentTodo} finshedEditTodos={finshedEditTodos}/>
-        <TaskList todos={notDoneTodo} handleDoneTodo={handleDoneTodo} getEditTodo={getEditTodo}/>
-        <TaskList doneTaskList todos={doneTodo} handleDoneTodo={handleDoneTodo} getEditTodo={getEditTodo} />
+        <TaskInput
+          addTodo={addTodo}
+          editTodo={editTodo}
+          currentTodo={currentTodo}
+          finshedEditTodos={finshedEditTodos}
+        />
+        <TaskList
+          todos={notDoneTodo}
+          handleDoneTodo={handleDoneTodo}
+          getEditTodo={getEditTodo}
+          deleteTodo={deleteTodo}
+        />
+        <TaskList
+          doneTaskList
+          todos={doneTodo}
+          handleDoneTodo={handleDoneTodo}
+          getEditTodo={getEditTodo}
+          deleteTodo={deleteTodo}
+        />
       </div>
     </div>
   )
