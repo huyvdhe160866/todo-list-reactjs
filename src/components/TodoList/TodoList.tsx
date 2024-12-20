@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TaskInput from '../TaskInput'
 import TaskList from '../TaskList'
 import styles from './todoList.module.scss'
@@ -12,6 +12,12 @@ export default function TodoList() {
   const doneTodo = todos.filter((todo) => todo.done)
   const notDoneTodo = todos.filter((todo) => !todo.done)
 
+  useEffect(() => {
+    const todosString = localStorage.getItem('todos')
+    const todosObject: Todo[] = JSON.parse(todosString || '[]')
+    setTodos(todosObject)
+  },[])
+
   const addTodo = (name: string) => {
     const todo: Todo = {
       name,
@@ -19,6 +25,10 @@ export default function TodoList() {
       id: new Date().toISOString()
     }
     setTodos((prev) => [...prev, todo])
+    const todosString = localStorage.getItem('todos')
+    const todosObject: Todo[] = JSON.parse(todosString || '[]')
+    const newTodos = [...todosObject, todo]
+    localStorage.setItem('todos', JSON.stringify(newTodos))
   }
 
   const handleDoneTodo = (id: string, done: boolean) => {
@@ -79,8 +89,6 @@ export default function TodoList() {
     })
   }
 
-  console.log('current todo', currentTodo)
-  console.log('todos: ', todos)
   return (
     <div className={styles.toDoList}>
       <div className={styles.toDoListContainer}>
