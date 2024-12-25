@@ -16,18 +16,21 @@ export default function TodoList() {
     const todosString = localStorage.getItem('todos')
     const todosObject: Todo[] = JSON.parse(todosString || '[]')
     setTodos(todosObject)
-  },[])
+  }, [])
 
   const addTodo = (name: string) => {
+    const handler = (todosObject: Todo[]) => {
+      return [...todosObject, todo]
+    }
     const todo: Todo = {
       name,
       done: false,
       id: new Date().toISOString()
     }
-    setTodos((prev) => [...prev, todo])
+    setTodos(handler)
     const todosString = localStorage.getItem('todos')
     const todosObject: Todo[] = JSON.parse(todosString || '[]')
-    const newTodos = [...todosObject, todo]
+    const newTodos = handler(todosObject)
     localStorage.setItem('todos', JSON.stringify(newTodos))
   }
 
@@ -63,15 +66,21 @@ export default function TodoList() {
   }
 
   const finshedEditTodos = () => {
-    setTodos((prev) => {
-      return prev.map((todo) => {
+    const handler = (todosObject: Todo[]) => {
+      return todosObject.map((todo) => {
         if (todo.id === currentTodo?.id) {
           return currentTodo
         }
         return todo
       })
-    })
+    }
+
+    setTodos(handler)
     setCurrentTodo(null)
+    const todosString = localStorage.getItem('todos')
+    const todosObject: Todo[] = JSON.parse(todosString || '[]')
+    const newTodos = handler(todosObject)
+    localStorage.setItem('todos', JSON.stringify(newTodos))
   }
 
   const deleteTodo = (id: string) => {
